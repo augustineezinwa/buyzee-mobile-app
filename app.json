@@ -37,6 +37,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "642785d6-1212-4a75-9c13-b46c468a9569"
+      }
+    },
+    "owner": "augustineezinwa"
   }
 }

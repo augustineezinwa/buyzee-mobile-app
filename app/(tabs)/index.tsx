@@ -1,29 +1,33 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Entypo, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Dimensions, FlatList, Image, ScrollView, StyleSheet, View } from 'react-native';
 import {
     ActivityIndicator,
-    Button,
     Chip,
     Searchbar,
     Text,
-    TouchableRipple,
-    useTheme
+    TouchableRipple
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCategories, useFeaturedProducts } from '../hooks/useProducts';
+import { useBizTheme } from '../hooks/useBizTheme';
+import { useFeaturedProducts } from '../hooks/useProducts';
+import { withOpacity } from '../theme/theme';
 import { Product } from '../types';
 
 const { width } = Dimensions.get('window');
-const PRODUCT_WIDTH = (width - 48 - 16) / 2;
+const PRODUCT_WIDTH = width * 0.6;
+const PRODUCT_CARD_PADDING = 12;
+const PRODUCT_CARD_BORDER_RADIUS = 5;
+
+const categories = ['All', 'Food items', 'Clothes', 'Foot wears', 'Bags'];
 
 export default function HomeScreen() {
     const router = useRouter();
-    const theme = useTheme();
+    const theme = useBizTheme();
     const { data: featuredProducts, isLoading: loadingProducts } = useFeaturedProducts();
-    const { data: categories, isLoading: loadingCategories } = useCategories();
-    const [searchQuery, setSearchQuery] = React.useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
     const handleSearch = () => {
         if (searchQuery.trim()) {
@@ -34,13 +38,13 @@ export default function HomeScreen() {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.empbizBackground,
         },
         loadingContainer: {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.empbizBackground,
         },
         header: {
             paddingHorizontal: 24,
@@ -53,36 +57,51 @@ export default function HomeScreen() {
             alignItems: 'center',
             marginBottom: 24,
         },
-        greeting: {
-            fontWeight: '700',
-            color: theme.colors.onBackground,
-        },
-        subtitle: {
-            color: theme.colors.onSurfaceVariant,
-            marginTop: 4,
-        },
-        profileButton: {
+        cartButton: {
             width: 44,
             height: 44,
             borderRadius: 22,
-            backgroundColor: theme.colors.surfaceVariant,
+            backgroundColor: theme.colors.empbizSecondary,
             justifyContent: 'center',
             alignItems: 'center',
-            borderWidth: 1,
-            borderColor: theme.colors.outline,
         },
         searchBar: {
-            backgroundColor: theme.colors.surfaceVariant,
+            backgroundColor: theme.colors.empbizDarkerBackground,
             elevation: 0,
-            borderWidth: 1,
-            borderColor: theme.colors.outline,
+            borderRadius: 5,
         },
         searchInput: {
             fontSize: 16,
-            color: theme.colors.onSurface,
+            color: theme.colors.empbizTextDarkerGray,
+            fontFamily: 'Inter',
+        },
+        advertBanner: {
+            marginHorizontal: 24,
+            backgroundColor: theme.colors.empbizPrimary,
+            borderRadius: 10,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        advertText: {
+            flex: 1,
+            color: 'white',
+            fontSize: 20,
+            fontWeight: 500,
+            lineHeight: 26,
+            fontFamily: 'Inter',
+            marginRight: 12,
+        },
+        advertImage: {
+            width: '33%',
+            aspectRatio: 1,
+            borderRadius: 5,
+            backgroundColor: 'white',
         },
         section: {
-            marginBottom: 32,
+            marginTop: 16,
+            marginBottom: 16,
         },
         sectionHeader: {
             flexDirection: 'row',
@@ -92,115 +111,103 @@ export default function HomeScreen() {
             marginBottom: 16,
         },
         sectionTitle: {
-            fontWeight: '700',
-            color: theme.colors.onBackground,
+            color: theme.colors.empbizBlack,
+            fontWeight: '500',
+            fontSize: 20,
+            fontFamily: 'Inter',
+        },
+        viewAllButton: {
+            flexDirection: 'row',
+            alignItems: 'center',
         },
         viewAllText: {
-            color: theme.colors.onSurfaceVariant,
-            fontSize: 14,
+            color: theme.colors.empbizTextDarkerGray,
+            marginRight: 8,
+            fontFamily: 'Inter',
+            fontSize: 16,
+            fontWeight: 500,
+        },
+        viewAllIcon: {
+            width: 38,
+            height: 38,
+            borderRadius: 38,
+            backgroundColor: theme.colors.empbizSecondary,
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         categoriesList: {
             paddingLeft: 24,
         },
         categoryChip: {
             marginRight: 12,
-            backgroundColor: theme.colors.surface,
-            borderColor: theme.colors.outline,
+            padding: 1.5,
+            backgroundColor: selectedCategory === 'All' ? theme.colors.empbizPrimary : theme.colors.empbizSecondary,
+            borderColor: theme.colors.empbizSecondary,
         },
         categoryText: {
-            color: theme.colors.onSurface,
-            fontWeight: '500',
+            color: selectedCategory === 'All' ? 'white' : theme.colors.empbizBlack,
+            fontWeight: '400',
+            fontFamily: 'Inter',
+            fontSize: 16,
         },
-        productsGrid: {
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            paddingHorizontal: 24,
-            gap: 16,
+        productsContainer: {
+            paddingLeft: 24,
         },
         productWrapper: {
             width: PRODUCT_WIDTH,
-            marginBottom: 20,
+            marginRight: 16,
         },
         productCard: {
-            backgroundColor: theme.colors.surface,
-            borderRadius: 16,
+            backgroundColor: 'white',
+            borderRadius: PRODUCT_CARD_BORDER_RADIUS,
             overflow: 'hidden',
+            padding: PRODUCT_CARD_PADDING,
         },
         productImageContainer: {
             position: 'relative',
-            backgroundColor: theme.colors.surfaceVariant,
+            width: '100%',
+            aspectRatio: 1,
+            borderRadius: PRODUCT_CARD_BORDER_RADIUS,
+            overflow: 'hidden',
+            marginBottom: PRODUCT_CARD_PADDING,
         },
         productImage: {
             width: '100%',
-            height: 180,
+            height: '100%',
             resizeMode: 'cover',
         },
-        saleTag: {
+        favoriteButton: {
             position: 'absolute',
             top: 12,
-            left: 12,
-            backgroundColor: theme.colors.primary,
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            borderRadius: 6,
-        },
-        saleText: {
-            color: theme.colors.onPrimary,
-            fontSize: 10,
-            fontWeight: '700',
+            right: 12,
+            width: 32,
+            height: 32,
+            borderRadius: 16,
+            backgroundColor: theme.colors.empbizIconGray,
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         productInfo: {
-            padding: 16,
+            padding: 8,
         },
         productName: {
-            color: theme.colors.onSurface,
-            marginBottom: 8,
-            minHeight: 40,
+            color: theme.colors.empbizBlack,
             fontWeight: '500',
-        },
-        priceRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
+            fontFamily: 'Inter',
+            fontSize: 18,
             marginBottom: 8,
         },
-        price: {
-            color: theme.colors.onSurface,
-            fontWeight: '700',
-            marginRight: 8,
+        productDescription: {
+            color: theme.colors.empbizTextGray,
+            fontWeight: '400',
+            fontFamily: 'Inter',
+            marginBottom: 13,
         },
-        originalPrice: {
-            textDecorationLine: 'line-through',
-            color: theme.colors.onSurfaceVariant,
-        },
-        ratingRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        rating: {
-            color: theme.colors.onSurfaceVariant,
-            marginLeft: 4,
-        },
-        quickActions: {
-            flexDirection: 'row',
-            paddingHorizontal: 24,
-            gap: 16,
-            marginBottom: 32,
-        },
-        actionCard: {
-            flex: 1,
-            backgroundColor: theme.colors.surfaceVariant,
-            borderRadius: 16,
-            padding: 20,
-            borderWidth: 1,
-            borderColor: theme.colors.outline,
-        },
-        actionContent: {
-            alignItems: 'center',
-        },
-        actionText: {
-            color: theme.colors.onSurfaceVariant,
-            marginTop: 8,
+        productPrice: {
+            color: theme.colors.empbizBlack,
             fontWeight: '500',
+            fontFamily: 'Inter',
+            fontSize: 18,
         },
         loader: {
             margin: 20,
@@ -212,38 +219,29 @@ export default function HomeScreen() {
 
     const renderProduct = ({ item }: { item: Product }) => (
         <TouchableRipple
-            style={styles.productCard}
+            style={styles.productWrapper}
             onPress={() => router.push(`/product/${item.id}`)}
-            rippleColor={theme.colors.primary + '1A'}>
-            <View>
+            rippleColor={withOpacity(theme.colors.empbizPrimary, 0.1)}>
+            <View style={styles.productCard}>
                 <View style={styles.productImageContainer}>
                     <Image source={{ uri: item.images[0] }} style={styles.productImage} />
-                    {item.originalPrice && (
-                        <View style={styles.saleTag}>
-                            <Text style={styles.saleText}>SALE</Text>
-                        </View>
-                    )}
+                    <TouchableRipple
+                        style={styles.favoriteButton}
+                        onPress={() => { }}
+                        rippleColor={withOpacity(theme.colors.empbizPrimary, 0.1)}>
+                        <MaterialIcons name="favorite-border" size={20} color="white" />
+                    </TouchableRipple>
                 </View>
                 <View style={styles.productInfo}>
-                    <Text variant="bodyMedium" numberOfLines={2} style={styles.productName}>
+                    <Text style={styles.productName} numberOfLines={2}>
                         {item.name}
                     </Text>
-                    <View style={styles.priceRow}>
-                        <Text variant="titleMedium" style={styles.price}>
-                            ${item.price}
-                        </Text>
-                        {item.originalPrice && (
-                            <Text variant="bodySmall" style={styles.originalPrice}>
-                                ${item.originalPrice}
-                            </Text>
-                        )}
-                    </View>
-                    <View style={styles.ratingRow}>
-                        <MaterialIcons name="star" size={16} color={theme.colors.primary} />
-                        <Text variant="bodySmall" style={styles.rating}>
-                            {item.rating}
-                        </Text>
-                    </View>
+                    <Text style={styles.productDescription} numberOfLines={2}>
+                        {item.description}
+                    </Text>
+                    <Text style={styles.productPrice}>
+                        N{item.price.toLocaleString()}
+                    </Text>
                 </View>
             </View>
         </TouchableRipple>
@@ -252,17 +250,30 @@ export default function HomeScreen() {
     const renderCategory = ({ item }: { item: string }) => (
         <Chip
             mode="outlined"
-            style={styles.categoryChip}
-            textStyle={styles.categoryText}
-            onPress={() => router.push(`/categories/${item}`)}>
+            style={[
+                styles.categoryChip,
+                { backgroundColor: selectedCategory === item ? theme.colors.empbizPrimary : theme.colors.empbizSecondary }
+            ]}
+            textStyle={[
+                styles.categoryText,
+                { color: selectedCategory === item ? 'white' : theme.colors.empbizBlack }
+            ]}
+            onPress={() => {
+                setSelectedCategory(item);
+                if (item === 'All') {
+                    router.push('/(screens)/products');
+                } else {
+                    router.push(`/(screens)/products?category=${item}`);
+                }
+            }}>
             {item}
         </Chip>
     );
 
-    if (loadingProducts && loadingCategories) {
+    if (loadingProducts) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.colors.primary} />
+                <ActivityIndicator size="large" color={theme.colors.empbizPrimary} />
             </View>
         );
     }
@@ -274,104 +285,99 @@ export default function HomeScreen() {
                 <View style={styles.header}>
                     <View style={styles.headerContent}>
                         <View>
-                            <Text variant="headlineSmall" style={styles.greeting}>
+                            <Text variant="headlineSmall" style={{ fontFamily: 'Inter' }}>
                                 Good morning
-                            </Text>
-                            <Text variant="bodyLarge" style={styles.subtitle}>
-                                What are you looking for?
                             </Text>
                         </View>
                         <TouchableRipple
-                            style={styles.profileButton}
-                            onPress={() => router.push('/(tabs)/profile')}
-                            rippleColor={theme.colors.primary + '1A'}>
-                            <MaterialIcons name="person-outline" size={24} color={theme.colors.onSurface} />
+                            style={styles.cartButton}
+                            onPress={() => router.push('/(tabs)/cart')}
+                            rippleColor={withOpacity(theme.colors.empbizPrimary, 0.1)}>
+                            <SimpleLineIcons name="handbag" size={24} color={theme.colors.empbizBlack} />
                         </TouchableRipple>
                     </View>
 
                     <Searchbar
-                        placeholder="Search products..."
+                        placeholder="Search the entire store"
                         onChangeText={setSearchQuery}
                         value={searchQuery}
                         onSubmitEditing={handleSearch}
                         onIconPress={handleSearch}
                         style={styles.searchBar}
                         inputStyle={styles.searchInput}
-                        iconColor={theme.colors.onSurfaceVariant}
+                        iconColor={theme.colors.empbizTextDarkerGray}
+                    />
+                </View>
+
+                {/* Advert Banner */}
+                <View style={styles.advertBanner}>
+                    <Text style={styles.advertText}>Delivery is 30% cheaper with us!</Text>
+                    <Image
+                        source={{ uri: 'https://example.com/happy-customer.jpg' }}
+                        style={styles.advertImage}
                     />
                 </View>
 
                 {/* Categories */}
-                {categories && categories.length > 0 && (
-                    <View style={styles.section}>
-                        <View style={styles.sectionHeader}>
-                            <Text variant="titleLarge" style={styles.sectionTitle}>
-                                Categories
-                            </Text>
-                        </View>
-                        <FlatList
-                            data={categories}
-                            renderItem={renderCategory}
-                            keyExtractor={(item) => item}
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.categoriesList}
-                        />
-                    </View>
-                )}
-
-                {/* Featured Products */}
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
-                        <Text variant="titleLarge" style={styles.sectionTitle}>
-                            Featured
-                        </Text>
-                        <Button
-                            mode="text"
-                            onPress={() => router.push('/search')}
-                            labelStyle={styles.viewAllText}>
-                            View All
-                        </Button>
-                    </View>
-
-                    {loadingProducts ? (
-                        <ActivityIndicator style={styles.loader} color={theme.colors.primary} />
-                    ) : (
-                        <View style={styles.productsGrid}>
-                            {featuredProducts?.map((product) => (
-                                <View key={product.id} style={styles.productWrapper}>
-                                    {renderProduct({ item: product })}
+                        <Text style={styles.sectionTitle}>Categories</Text>
+                        <TouchableRipple
+                            style={styles.viewAllButton}
+                            onPress={() => router.push('/(screens)/categories')}
+                            rippleColor={withOpacity(theme.colors.empbizPrimary, 0.1)}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={styles.viewAllText}>See all</Text>
+                                <View style={styles.viewAllIcon}>
+                                    <Entypo name="chevron-right" size={16} color={theme.colors.empbizBlack} />
                                 </View>
-                            ))}
-                        </View>
-                    )}
+                            </View>
+                        </TouchableRipple>
+                    </View>
+                    <FlatList
+                        data={categories}
+                        renderItem={renderCategory}
+                        keyExtractor={(item) => item}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.categoriesList}
+                    />
                 </View>
 
-                {/* Quick Actions */}
-                <View style={styles.quickActions}>
-                    <TouchableRipple
-                        style={styles.actionCard}
-                        onPress={() => router.push('/(tabs)/orders')}
-                        rippleColor={theme.colors.primary + '1A'}>
-                        <View style={styles.actionContent}>
-                            <MaterialIcons name="local-shipping" size={24} color={theme.colors.onSurface} />
-                            <Text variant="bodyMedium" style={styles.actionText}>
-                                My Orders
-                            </Text>
-                        </View>
-                    </TouchableRipple>
+                {/* All Products */}
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>All Products</Text>
+                    </View>
+                    <FlatList
+                        data={featuredProducts}
+                        renderItem={renderProduct}
+                        keyExtractor={(item) => item.id}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.productsContainer}
+                        snapToInterval={PRODUCT_WIDTH + 16}
+                        decelerationRate="fast"
+                        snapToAlignment="start"
+                    />
+                </View>
 
-                    <TouchableRipple
-                        style={styles.actionCard}
-                        onPress={() => router.push('/(tabs)/cart')}
-                        rippleColor={theme.colors.primary + '1A'}>
-                        <View style={styles.actionContent}>
-                            <MaterialIcons name="shopping-bag" size={24} color={theme.colors.onSurface} />
-                            <Text variant="bodyMedium" style={styles.actionText}>
-                                My Cart
-                            </Text>
-                        </View>
-                    </TouchableRipple>
+                {/* Latest Addition */}
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Latest Addition</Text>
+                    </View>
+                    <FlatList
+                        data={featuredProducts?.slice(0, 4)}
+                        renderItem={renderProduct}
+                        keyExtractor={(item) => item.id}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.productsContainer}
+                        snapToInterval={PRODUCT_WIDTH + 16}
+                        decelerationRate="fast"
+                        snapToAlignment="start"
+                    />
                 </View>
 
                 <View style={styles.bottomPadding} />

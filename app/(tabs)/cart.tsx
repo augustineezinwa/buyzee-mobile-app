@@ -1,151 +1,200 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { FlatList, Image, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { Animated, FlatList, Image, StyleSheet, View } from 'react-native';
 import {
     ActivityIndicator,
     Button,
     Divider,
+    IconButton,
     Text,
     TouchableRipple,
-    useTheme
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useBizTheme } from '../hooks/useBizTheme';
 import { useCart, useRemoveFromCart, useUpdateCartItem } from '../hooks/useCart';
+import { withOpacity } from '../theme/theme';
 import { CartItem } from '../types';
 
 export default function CartScreen() {
     const router = useRouter();
-    const theme = useTheme();
+    const theme = useBizTheme();
     const { data: cart, isLoading } = useCart();
     const updateCartItemMutation = useUpdateCartItem();
     const removeFromCartMutation = useRemoveFromCart();
+    const [animatedValues] = useState(new Map<string, Animated.Value>());
 
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.empbizBackground,
         },
         loadingContainer: {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.empbizBackground,
         },
         emptyContainer: {
             flex: 1,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.empbizBackground,
         },
         emptyContent: {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            padding: 20,
+            padding: 24,
         },
         emptyTitle: {
             marginTop: 24,
             marginBottom: 8,
-            color: theme.colors.onBackground,
+            color: theme.colors.empbizBlack,
             fontWeight: '700',
+            fontFamily: 'Inter',
         },
         emptySubtitle: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
             textAlign: 'center',
             marginBottom: 32,
+            fontFamily: 'Inter',
         },
         shopButton: {
-            backgroundColor: theme.colors.primary,
+            backgroundColor: theme.colors.empbizPrimary,
             borderRadius: 12,
         },
         shopButtonContent: {
             paddingVertical: 8,
         },
+        shopButtonLabel: {
+            color: 'white',
+            fontFamily: 'Inter',
+            fontWeight: '600',
+        },
         header: {
-            padding: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            backgroundColor: theme.colors.empbizBackground,
+        },
+        backButton: {
+            marginRight: 8,
+        },
+        headerTitleContainer: {
+            flex: 1,
         },
         headerTitle: {
-            color: theme.colors.onBackground,
+            color: theme.colors.empbizBlack,
             fontWeight: '700',
+            fontFamily: 'Inter',
+            fontSize: 20,
         },
         itemCount: {
-            color: theme.colors.onSurfaceVariant,
-            marginTop: 4,
+            color: theme.colors.empbizTextDarkerGray,
+            marginTop: 2,
+            fontFamily: 'Inter',
+            fontSize: 14,
         },
         cartList: {
-            padding: 20,
+            paddingHorizontal: 24,
+        },
+        cartItemContainer: {
+            marginBottom: 8,
         },
         cartItem: {
             flexDirection: 'row',
-            marginBottom: 20,
+            alignItems: 'flex-start',
+            paddingVertical: 8,
         },
         itemImage: {
             width: 100,
             height: 100,
-            borderRadius: 12,
-            backgroundColor: theme.colors.surfaceVariant,
+            borderRadius: 8,
+            backgroundColor: theme.colors.empbizDarkerBackground,
         },
         itemDetails: {
             flex: 1,
-            marginLeft: 16,
-        },
-        itemName: {
-            color: theme.colors.onSurface,
-            marginBottom: 4,
-        },
-        variants: {
-            flexDirection: 'row',
-            marginBottom: 8,
-        },
-        variant: {
-            color: theme.colors.onSurfaceVariant,
-            marginRight: 12,
-        },
-        itemPrice: {
-            color: theme.colors.onSurface,
-            fontWeight: '700',
-        },
-        quantitySection: {
-            alignItems: 'flex-end',
+            marginLeft: 12,
+            height: 100, // Match image height
             justifyContent: 'space-between',
         },
-        quantityControls: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: theme.colors.surfaceVariant,
-            borderRadius: 8,
-            padding: 4,
+        productInfo: {
+            flex: 1,
         },
-        quantityButton: {
+        itemName: {
+            color: theme.colors.empbizBlack,
+            fontFamily: 'Inter',
+            fontWeight: '500',
+            fontSize: 16,
+            marginBottom: 4,
+        },
+        itemCategory: {
+            color: theme.colors.empbizTextDarkerGray,
+            fontFamily: 'Inter',
+            fontWeight: '400',
+            fontSize: 13,
+            marginBottom: 4,
+        },
+        itemPrice: {
+            color: theme.colors.empbizBlack,
+            fontWeight: '600',
+            fontFamily: 'Inter',
+            fontSize: 18,
+        },
+        rightSection: {
+            width: 60,
+            height: 100, // Match image height
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+        },
+        closeButton: {
             width: 32,
             height: 32,
             justifyContent: 'center',
             alignItems: 'center',
-            borderRadius: 8,
         },
-        quantity: {
-            color: theme.colors.onSurface,
-            marginHorizontal: 12,
+        quantityControls: {
+            flexDirection: 'row',
+            alignItems: 'center',
         },
-        removeButton: {
-            width: 40,
-            height: 40,
+        quantityButton: {
+            width: 36,
+            height: 36,
+            borderRadius: 10,
             justifyContent: 'center',
             alignItems: 'center',
-            borderRadius: 20,
         },
-        separator: {
+        minusButton: {
+            borderWidth: 1,
+            borderColor: '#D9D9D9',
+            backgroundColor: 'white',
+        },
+        plusButton: {
+            borderWidth: 1,
+            borderColor: '#00D073',
+            backgroundColor: 'white',
+        },
+        quantity: {
+            color: theme.colors.empbizBlack,
+            marginHorizontal: 3,
+            fontFamily: 'Inter',
+            fontWeight: '500',
+            fontSize: 16,
+            minWidth: 28,
+            textAlign: 'center',
+        },
+        divider: {
             height: 1,
-            backgroundColor: theme.colors.outline,
-            marginVertical: 20,
+            backgroundColor: '#F1F2F2',
         },
         checkoutSection: {
-            padding: 20,
+            padding: 24,
             borderTopWidth: 1,
-            borderTopColor: theme.colors.outline,
-            backgroundColor: theme.colors.surface,
+            borderTopColor: theme.colors.empbizIconGray,
+            backgroundColor: 'white',
         },
         summary: {
-            marginBottom: 20,
+            marginBottom: 24,
         },
         summaryRow: {
             flexDirection: 'row',
@@ -153,109 +202,149 @@ export default function CartScreen() {
             marginBottom: 12,
         },
         summaryLabel: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
+            fontFamily: 'Inter',
+            fontSize: 16,
         },
         summaryValue: {
-            color: theme.colors.onSurface,
-            fontWeight: '500',
+            color: theme.colors.empbizBlack,
+            fontWeight: '600',
+            fontFamily: 'Inter',
+            fontSize: 16,
         },
-        divider: {
+        summaryDivider: {
             marginVertical: 12,
-            backgroundColor: theme.colors.outline,
+            backgroundColor: theme.colors.empbizIconGray,
         },
         totalLabel: {
-            color: theme.colors.onSurface,
+            color: theme.colors.empbizBlack,
             fontWeight: '700',
+            fontFamily: 'Inter',
+            fontSize: 18,
         },
         totalValue: {
-            color: theme.colors.onSurface,
+            color: theme.colors.empbizBlack,
             fontWeight: '700',
+            fontFamily: 'Inter',
+            fontSize: 18,
         },
         checkoutButton: {
-            backgroundColor: theme.colors.primary,
+            backgroundColor: theme.colors.empbizPrimary,
             borderRadius: 12,
         },
         checkoutButtonContent: {
-            paddingVertical: 8,
+            paddingVertical: 12,
+        },
+        checkoutButtonLabel: {
+            color: 'white',
+            fontFamily: 'Inter',
+            fontWeight: '600',
+            fontSize: 16,
         },
     });
 
+    const getAnimatedValue = (itemId: string) => {
+        if (!animatedValues.has(itemId)) {
+            animatedValues.set(itemId, new Animated.Value(1));
+        }
+        return animatedValues.get(itemId)!;
+    };
+
     const handleUpdateQuantity = (itemId: string, quantity: number) => {
         if (quantity <= 0) {
-            removeFromCartMutation.mutate(itemId);
+            handleRemoveItem(itemId);
         } else {
             updateCartItemMutation.mutate({ itemId, quantity });
         }
     };
 
     const handleRemoveItem = (itemId: string) => {
-        removeFromCartMutation.mutate(itemId);
+        const animatedValue = getAnimatedValue(itemId);
+
+        Animated.timing(animatedValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false,
+        }).start(() => {
+            removeFromCartMutation.mutate(itemId);
+        });
     };
 
-    const renderCartItem = ({ item }: { item: CartItem }) => (
-        <View style={styles.cartItem}>
-            <Image source={{ uri: item.image }} style={styles.itemImage} />
+    const renderCartItem = ({ item }: { item: CartItem }) => {
+        const animatedValue = getAnimatedValue(item.id);
 
-            <View style={styles.itemDetails}>
-                <Text variant="bodyLarge" numberOfLines={2} style={styles.itemName}>
-                    {item.name}
-                </Text>
+        return (
+            <Animated.View
+                style={[
+                    styles.cartItemContainer,
+                    {
+                        opacity: animatedValue,
+                        transform: [
+                            {
+                                scaleY: animatedValue,
+                            },
+                        ],
+                    },
+                ]}
+            >
+                <View style={styles.cartItem}>
+                    <Image source={{ uri: item.image }} style={styles.itemImage} />
 
-                {(item.size || item.color) && (
-                    <View style={styles.variants}>
-                        {item.size && (
-                            <Text variant="bodySmall" style={styles.variant}>
-                                Size: {item.size}
+                    <View style={styles.itemDetails}>
+                        <View style={styles.productInfo}>
+                            <Text numberOfLines={2} style={styles.itemName}>
+                                {item.name}
                             </Text>
-                        )}
-                        {item.color && (
-                            <Text variant="bodySmall" style={styles.variant}>
-                                Color: {item.color}
+
+                            <Text style={styles.itemCategory}>
+                                {item.category}
                             </Text>
-                        )}
+                        </View>
+
+                        <Text style={styles.itemPrice}>
+                            ${item.price.toFixed(2)}
+                        </Text>
                     </View>
-                )}
 
-                <Text variant="titleMedium" style={styles.itemPrice}>
-                    ${item.price}
-                </Text>
-            </View>
+                    <View style={styles.rightSection}>
+                        <TouchableRipple
+                            style={styles.closeButton}
+                            onPress={() => handleRemoveItem(item.id)}
+                            rippleColor={withOpacity('#727993', 0.3)}>
+                            <MaterialIcons name="close" size={20} color="#727993" />
+                        </TouchableRipple>
 
-            <View style={styles.quantitySection}>
-                <View style={styles.quantityControls}>
-                    <TouchableRipple
-                        style={styles.quantityButton}
-                        onPress={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                        rippleColor={theme.colors.primary + '1A'}>
-                        <MaterialIcons name="remove" size={16} color={theme.colors.onSurface} />
-                    </TouchableRipple>
+                        <View style={styles.quantityControls}>
+                            <TouchableRipple
+                                style={[styles.quantityButton, styles.minusButton]}
+                                onPress={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                                rippleColor={withOpacity('#D9D9D9', 0.3)}>
+                                <MaterialIcons name="remove" size={16} color="#727993" />
+                            </TouchableRipple>
 
-                    <Text variant="bodyLarge" style={styles.quantity}>
-                        {item.quantity}
-                    </Text>
+                            <Text style={styles.quantity}>
+                                {item.quantity}
+                            </Text>
 
-                    <TouchableRipple
-                        style={styles.quantityButton}
-                        onPress={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                        rippleColor={theme.colors.primary + '1A'}>
-                        <MaterialIcons name="add" size={16} color={theme.colors.onSurface} />
-                    </TouchableRipple>
+                            <TouchableRipple
+                                style={[styles.quantityButton, styles.plusButton]}
+                                onPress={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                                rippleColor={withOpacity('#00D073', 0.3)}>
+                                <MaterialIcons name="add" size={16} color="#00D073" />
+                            </TouchableRipple>
+                        </View>
+                    </View>
                 </View>
 
-                <TouchableRipple
-                    style={styles.removeButton}
-                    onPress={() => handleRemoveItem(item.id)}
-                    rippleColor={theme.colors.error + '1A'}>
-                    <MaterialIcons name="delete-outline" size={20} color={theme.colors.error} />
-                </TouchableRipple>
-            </View>
-        </View>
-    );
+                <View style={styles.divider} />
+            </Animated.View>
+        );
+    };
 
     if (isLoading) {
         return (
             <SafeAreaView style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.colors.primary} />
+                <ActivityIndicator size="large" color={theme.colors.empbizPrimary} />
             </SafeAreaView>
         );
     }
@@ -263,8 +352,22 @@ export default function CartScreen() {
     if (!cart || cart.items.length === 0) {
         return (
             <SafeAreaView style={styles.emptyContainer}>
+                <View style={styles.header}>
+                    <IconButton
+                        icon="arrow-left"
+                        size={24}
+                        iconColor={theme.colors.empbizBlack}
+                        style={styles.backButton}
+                        onPress={() => router.back()}
+                    />
+                    <View style={styles.headerTitleContainer}>
+                        <Text style={styles.headerTitle}>Shopping Cart</Text>
+                        <Text style={styles.itemCount}>0 items</Text>
+                    </View>
+                </View>
+
                 <View style={styles.emptyContent}>
-                    <MaterialIcons name="shopping-bag" size={80} color={theme.colors.outline} />
+                    <MaterialIcons name="shopping-bag" size={80} color={theme.colors.empbizIconGray} />
                     <Text variant="headlineSmall" style={styles.emptyTitle}>
                         Your cart is empty
                     </Text>
@@ -275,6 +378,7 @@ export default function CartScreen() {
                         mode="contained"
                         style={styles.shopButton}
                         contentStyle={styles.shopButtonContent}
+                        labelStyle={styles.shopButtonLabel}
                         onPress={() => router.push('/(tabs)')}>
                         Start Shopping
                     </Button>
@@ -284,14 +388,21 @@ export default function CartScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['top']}>
             <View style={styles.header}>
-                <Text variant="headlineSmall" style={styles.headerTitle}>
-                    Shopping Cart
-                </Text>
-                <Text variant="bodyMedium" style={styles.itemCount}>
-                    {cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'}
-                </Text>
+                <IconButton
+                    icon="arrow-left"
+                    size={24}
+                    iconColor={theme.colors.empbizBlack}
+                    style={styles.backButton}
+                    onPress={() => router.back()}
+                />
+                <View style={styles.headerTitleContainer}>
+                    <Text style={styles.headerTitle}>Shopping Cart</Text>
+                    <Text style={styles.itemCount}>
+                        {cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'}
+                    </Text>
+                </View>
             </View>
 
             <FlatList
@@ -300,36 +411,35 @@ export default function CartScreen() {
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.cartList}
                 showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={() => <View style={styles.separator} />}
             />
 
             <View style={styles.checkoutSection}>
                 <View style={styles.summary}>
                     <View style={styles.summaryRow}>
-                        <Text variant="bodyLarge" style={styles.summaryLabel}>
+                        <Text style={styles.summaryLabel}>
                             Subtotal
                         </Text>
-                        <Text variant="bodyLarge" style={styles.summaryValue}>
+                        <Text style={styles.summaryValue}>
                             ${cart.total.toFixed(2)}
                         </Text>
                     </View>
 
                     <View style={styles.summaryRow}>
-                        <Text variant="bodyLarge" style={styles.summaryLabel}>
+                        <Text style={styles.summaryLabel}>
                             Shipping
                         </Text>
-                        <Text variant="bodyLarge" style={styles.summaryValue}>
+                        <Text style={styles.summaryValue}>
                             Free
                         </Text>
                     </View>
 
-                    <Divider style={styles.divider} />
+                    <Divider style={styles.summaryDivider} />
 
                     <View style={styles.summaryRow}>
-                        <Text variant="titleLarge" style={styles.totalLabel}>
+                        <Text style={styles.totalLabel}>
                             Total
                         </Text>
-                        <Text variant="titleLarge" style={styles.totalValue}>
+                        <Text style={styles.totalValue}>
                             ${cart.total.toFixed(2)}
                         </Text>
                     </View>
@@ -339,6 +449,7 @@ export default function CartScreen() {
                     mode="contained"
                     style={styles.checkoutButton}
                     contentStyle={styles.checkoutButtonContent}
+                    labelStyle={styles.checkoutButtonLabel}
                     onPress={() => router.push('/checkout')}>
                     Checkout
                 </Button>

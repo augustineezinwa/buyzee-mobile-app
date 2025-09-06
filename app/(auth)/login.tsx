@@ -6,17 +6,17 @@ import {
     Snackbar,
     Text,
     TextInput,
-    useTheme,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLogin } from '../hooks/useAuth';
+import { useBizTheme } from '../hooks/useBizTheme';
 
 const { height } = Dimensions.get('window');
 
 const LoginScreen = () => {
     const router = useRouter();
     const loginMutation = useLogin();
-    const theme = useTheme();
+    const theme = useBizTheme();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -41,7 +41,7 @@ const LoginScreen = () => {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.empbizBackground,
         },
         scrollContent: {
             flexGrow: 1,
@@ -54,12 +54,14 @@ const LoginScreen = () => {
         },
         title: {
             fontWeight: '700',
-            color: theme.colors.onBackground,
+            color: theme.colors.empbizBlack,
             marginBottom: 8,
+            fontFamily: 'Inter',
         },
         subtitle: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
             textAlign: 'center',
+            fontFamily: 'Inter',
         },
         form: {
             flex: 1,
@@ -68,19 +70,20 @@ const LoginScreen = () => {
         },
         input: {
             marginBottom: 20,
-            backgroundColor: theme.colors.surface,
+            backgroundColor: 'white',
         },
         inputOutline: {
-            borderColor: theme.colors.outline,
+            borderColor: theme.colors.empbizIconGray,
             borderWidth: 1,
         },
         inputContent: {
             fontSize: 16,
+            fontFamily: 'Inter',
         },
         loginButton: {
             marginTop: 12,
             marginBottom: 24,
-            backgroundColor: theme.colors.primary,
+            backgroundColor: theme.colors.empbizPrimary,
             borderRadius: 12,
         },
         buttonContent: {
@@ -90,31 +93,33 @@ const LoginScreen = () => {
             marginTop: 8,
         },
         registerLabel: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
             fontSize: 14,
+            fontFamily: 'Inter',
         },
         demo: {
             alignItems: 'center',
             paddingBottom: 40,
         },
         demoCard: {
-            backgroundColor: theme.colors.surfaceVariant,
+            backgroundColor: theme.colors.empbizDarkerBackground,
             paddingHorizontal: 20,
             paddingVertical: 16,
             borderRadius: 12,
             alignItems: 'center',
             borderWidth: 1,
-            borderColor: theme.colors.outline,
+            borderColor: theme.colors.empbizIconGray,
         },
         demoTitle: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
             fontWeight: '600',
             marginBottom: 8,
+            fontFamily: 'Inter',
         },
         demoText: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
             fontSize: 12,
-            fontFamily: 'monospace',
+            fontFamily: 'Inter',
         },
         snackbar: {
             backgroundColor: theme.colors.error,

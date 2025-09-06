@@ -30,6 +30,7 @@ export interface CartItem {
     quantity: number;
     size?: string;
     color?: string;
+    category: string;
 }
 
 export interface Cart {
@@ -66,4 +67,38 @@ export interface AuthCredentials {
 export interface RegisterCredentials extends AuthCredentials {
     name: string;
     confirmPassword: string;
+}
+
+export interface PaymentData {
+    email: string;
+    amount: number;
+    reference: string;
+    cardNumber: string;
+    expiryMonth: string;
+    expiryYear: string;
+    cvc: string;
+    metadata?: {
+        [key: string]: any;
+    };
+}
+
+export interface PaymentResult {
+    success: boolean;
+    reference?: string;
+    error?: string;
+}
+
+export interface CheckoutFormData {
+    email: string;
+    cardNumber: string;
+    expiryMonth: string;
+    expiryYear: string;
+    cvc: string;
+    deliveryAddress: {
+        street: string;
+        city: string;
+        state: string;
+        zipCode: string;
+        country: string;
+    };
 }

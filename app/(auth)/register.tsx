@@ -1,15 +1,16 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Snackbar, Text, TextInput, useTheme } from 'react-native-paper';
+import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRegister } from '../hooks/useAuth';
+import { useBizTheme } from '../hooks/useBizTheme';
 
 const { height } = Dimensions.get('window');
 
 const RegisterScreen = () => {
     const router = useRouter();
-    const theme = useTheme();
+    const theme = useBizTheme();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -50,7 +51,7 @@ const RegisterScreen = () => {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.empbizBackground,
         },
         scrollContent: {
             flexGrow: 1,
@@ -63,12 +64,14 @@ const RegisterScreen = () => {
         },
         title: {
             fontWeight: '700',
-            color: theme.colors.onBackground,
+            color: theme.colors.empbizBlack,
             marginBottom: 8,
+            fontFamily: 'Inter',
         },
         subtitle: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
             textAlign: 'center',
+            fontFamily: 'Inter',
         },
         form: {
             flex: 1,
@@ -77,33 +80,36 @@ const RegisterScreen = () => {
         },
         input: {
             marginBottom: 20,
-            backgroundColor: theme.colors.surface,
+            backgroundColor: 'white',
         },
         inputOutline: {
-            borderColor: theme.colors.outline,
+            borderColor: theme.colors.empbizIconGray,
             borderWidth: 1,
         },
         inputContent: {
             fontSize: 16,
+            fontFamily: 'Inter',
         },
         registerButton: {
             marginTop: 12,
             marginBottom: 24,
-            backgroundColor: theme.colors.primary,
+            backgroundColor: theme.colors.empbizPrimary,
             borderRadius: 12,
         },
         buttonContent: {
             paddingVertical: 8,
         },
         buttonLabel: {
-            color: theme.colors.onPrimary,
+            color: 'white',
+            fontFamily: 'Inter',
         },
         loginButton: {
             marginTop: 8,
         },
         loginLabel: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
             fontSize: 14,
+            fontFamily: 'Inter',
         },
         snackbar: {
             backgroundColor: theme.colors.error,

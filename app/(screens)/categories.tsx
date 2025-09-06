@@ -1,23 +1,25 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import { Text, TouchableRipple, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
+import { Text, TouchableRipple } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useBizTheme } from '../hooks/useBizTheme';
 import { useCategories } from '../hooks/useProducts';
+import { withOpacity } from '../theme/theme';
 
 const { width } = Dimensions.get('window');
 const CATEGORY_WIDTH = (width - 48 - 16) / 2;
 
 export default function CategoriesScreen() {
     const router = useRouter();
-    const theme = useTheme();
+    const theme = useBizTheme();
     const { data: categories, isLoading } = useCategories();
 
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.empbizBackground,
         },
         content: {
             padding: 24,
@@ -26,12 +28,14 @@ export default function CategoriesScreen() {
             marginBottom: 32,
         },
         title: {
-            color: theme.colors.onBackground,
+            color: theme.colors.empbizBlack,
             fontWeight: '700',
             marginBottom: 8,
+            fontFamily: 'Inter',
         },
         subtitle: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
+            fontFamily: 'Inter',
         },
         categoriesGrid: {
             flexDirection: 'row',
@@ -41,28 +45,30 @@ export default function CategoriesScreen() {
         categoryCard: {
             width: CATEGORY_WIDTH,
             marginBottom: 16,
-            backgroundColor: theme.colors.surface,
+            backgroundColor: 'white',
             borderRadius: 16,
             overflow: 'hidden',
             borderWidth: 1,
-            borderColor: theme.colors.outline,
+            borderColor: theme.colors.empbizIconGray,
         },
         categoryImage: {
             width: '100%',
             height: 120,
-            backgroundColor: theme.colors.surfaceVariant,
+            backgroundColor: theme.colors.empbizDarkerBackground,
         },
         categoryContent: {
             padding: 16,
         },
         categoryName: {
-            color: theme.colors.onSurface,
+            color: theme.colors.empbizBlack,
             fontWeight: '600',
             marginBottom: 4,
+            fontFamily: 'Inter',
         },
         categoryCount: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
             fontSize: 12,
+            fontFamily: 'Inter',
         },
         loadingContainer: {
             flex: 1,
@@ -79,14 +85,16 @@ export default function CategoriesScreen() {
             marginBottom: 24,
         },
         emptyTitle: {
-            color: theme.colors.onBackground,
+            color: theme.colors.empbizBlack,
             fontWeight: '700',
             marginBottom: 8,
             textAlign: 'center',
+            fontFamily: 'Inter',
         },
         emptySubtitle: {
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.empbizTextDarkerGray,
             textAlign: 'center',
+            fontFamily: 'Inter',
         },
     });
 
@@ -149,8 +157,8 @@ export default function CategoriesScreen() {
                         <TouchableRipple
                             key={category}
                             style={styles.categoryCard}
-                            onPress={() => router.push(`/categories/${category}`)}
-                            rippleColor={theme.colors.primary + '1A'}>
+                            onPress={() => router.push(`/(screens)/categories/${category}`)}
+                            rippleColor={withOpacity(theme.colors.empbizPrimary, 0.1)}>
                             <View>
                                 <View style={styles.categoryImage} />
                                 <View style={styles.categoryContent}>

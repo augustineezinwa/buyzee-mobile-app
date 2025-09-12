@@ -11,6 +11,7 @@ import {
     Text,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuthGuard } from '../hooks/useAuthGuard';
 import { useBizTheme } from '../hooks/useBizTheme';
 import { useAddToCart } from '../hooks/useCart';
 import { useProduct } from '../hooks/useProducts';
@@ -27,6 +28,7 @@ const ProductDetailScreen = () => {
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
+    const { isAuthenticated, requireAuth } = useAuthGuard();
 
     const styles = StyleSheet.create({
         container: {
@@ -136,7 +138,7 @@ const ProductDetailScreen = () => {
             marginBottom: 16,
         },
         colorChip: {
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
             borderColor: theme.colors.empbizIconGray,
         },
         colorChipSelected: {
@@ -157,7 +159,7 @@ const ProductDetailScreen = () => {
             gap: 8,
         },
         sizeChip: {
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
             borderColor: theme.colors.empbizIconGray,
         },
         divider: {
@@ -166,7 +168,8 @@ const ProductDetailScreen = () => {
         },
         bottomBar: {
             padding: 24,
-            backgroundColor: 'white',
+            paddingBottom: 60,
+            backgroundColor: theme.colors.surface,
             borderTopWidth: 1,
             borderTopColor: theme.colors.empbizIconGray,
         },
@@ -191,6 +194,11 @@ const ProductDetailScreen = () => {
 
     const handleAddToCart = () => {
         if (!product) return;
+
+        // Check authentication first
+        if (!requireAuth(`/product/${id}`)) {
+            return;
+        }
 
         // Check if product has colors and require selection
         if (product.colors && product.colors.length > 0 && !selectedColor) {

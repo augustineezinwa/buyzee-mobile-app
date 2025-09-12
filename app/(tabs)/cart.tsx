@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Animated, FlatList, Image, StyleSheet, View } from 'react-native';
 import {
     ActivityIndicator,
@@ -11,6 +11,7 @@ import {
     TouchableRipple,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuthGuard } from '../hooks/useAuthGuard';
 import { useBizTheme } from '../hooks/useBizTheme';
 import { useCart, useRemoveFromCart, useUpdateCartItem } from '../hooks/useCart';
 import { withOpacity } from '../theme/theme';
@@ -19,10 +20,23 @@ import { CartItem } from '../types';
 export default function CartScreen() {
     const router = useRouter();
     const theme = useBizTheme();
+    const { isAuthenticated, requireAuth } = useAuthGuard();
     const { data: cart, isLoading } = useCart();
     const updateCartItemMutation = useUpdateCartItem();
     const removeFromCartMutation = useRemoveFromCart();
     const [animatedValues] = useState(new Map<string, Animated.Value>());
+
+    // Check authentication when component mounts
+    useEffect(() => {
+        if (!requireAuth('/(tabs)/cart')) {
+            return;
+        }
+    }, [isAuthenticated]);
+
+    // Don't render anything if not authenticated - the auth guard will redirect
+    if (!isAuthenticated) {
+        return null;
+    }
 
     const styles = StyleSheet.create({
         container: {
@@ -166,13 +180,13 @@ export default function CartScreen() {
         },
         minusButton: {
             borderWidth: 1,
-            borderColor: '#D9D9D9',
-            backgroundColor: 'white',
+            borderColor: theme.colors.empbizIconGray,
+            backgroundColor: theme.colors.empbizDarkerBackground,
         },
         plusButton: {
             borderWidth: 1,
-            borderColor: '#00D073',
-            backgroundColor: 'white',
+            borderColor: theme.colors.empbizPrimary,
+            backgroundColor: theme.colors.empbizDarkerBackground,
         },
         quantity: {
             color: theme.colors.empbizBlack,
@@ -191,7 +205,7 @@ export default function CartScreen() {
             padding: 24,
             borderTopWidth: 1,
             borderTopColor: theme.colors.empbizIconGray,
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
         },
         summary: {
             marginBottom: 24,

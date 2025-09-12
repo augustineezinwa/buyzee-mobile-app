@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { authAPI } from '../services/api';
@@ -51,12 +52,20 @@ export function useLogout() {
 
     return useMutation({
         mutationFn: authAPI.logout,
-        onSuccess: () => {
+        onSuccess: async () => {
             // Clear all cached data on logout
             queryClient.clear();
             queryClient.setQueryData(authKeys.currentUser, null);
+
+            // Clear the skip preference so user sees intro screen again
+            try {
+                await AsyncStorage.removeItem('userSkippedAuth');
+            } catch (error) {
+                console.error('Error clearing skip preference:', error);
+            }
+
             // Redirect to auth screen
-            router.replace('/(auth)/login');
+            router.replace('/(auth)/intro');
         },
     });
 }

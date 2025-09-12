@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
@@ -11,6 +11,7 @@ const { height } = Dimensions.get('window');
 const RegisterScreen = () => {
     const router = useRouter();
     const theme = useBizTheme();
+    const { fallback } = useLocalSearchParams<{ fallback?: string }>();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -41,7 +42,12 @@ const RegisterScreen = () => {
 
         try {
             await registerMutation.mutateAsync({ name, email, password });
-            // The root layout will handle the redirect after successful registration
+            // Redirect to fallback route if provided, otherwise go to tabs
+            if (fallback) {
+                router.replace(decodeURIComponent(fallback));
+            } else {
+                router.replace('/(tabs)');
+            }
         } catch (error) {
             setSnackbarMessage(registerMutation.error?.message || 'Registration failed');
             setSnackbarVisible(true);
@@ -80,7 +86,7 @@ const RegisterScreen = () => {
         },
         input: {
             marginBottom: 20,
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
         },
         inputOutline: {
             borderColor: theme.colors.empbizIconGray,
@@ -138,6 +144,14 @@ const RegisterScreen = () => {
                         outlineStyle={styles.inputOutline}
                         contentStyle={styles.inputContent}
                         error={registerMutation.isError && !name}
+                        selectionColor={theme.colors.empbizPrimary}
+                        activeOutlineColor={theme.colors.empbizPrimary}
+                        theme={{
+                            colors: {
+                                outline: theme.colors.empbizIconGray,
+                                onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                            }
+                        }}
                     />
 
                     <TextInput
@@ -151,6 +165,14 @@ const RegisterScreen = () => {
                         outlineStyle={styles.inputOutline}
                         contentStyle={styles.inputContent}
                         error={registerMutation.isError && !email}
+                        selectionColor={theme.colors.empbizPrimary}
+                        activeOutlineColor={theme.colors.empbizPrimary}
+                        theme={{
+                            colors: {
+                                outline: theme.colors.empbizIconGray,
+                                onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                            }
+                        }}
                     />
 
                     <TextInput
@@ -169,6 +191,14 @@ const RegisterScreen = () => {
                         outlineStyle={styles.inputOutline}
                         contentStyle={styles.inputContent}
                         error={registerMutation.isError && !password}
+                        selectionColor={theme.colors.empbizPrimary}
+                        activeOutlineColor={theme.colors.empbizPrimary}
+                        theme={{
+                            colors: {
+                                outline: theme.colors.empbizIconGray,
+                                onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                            }
+                        }}
                     />
 
                     <TextInput
@@ -181,8 +211,15 @@ const RegisterScreen = () => {
                         outlineStyle={styles.inputOutline}
                         contentStyle={styles.inputContent}
                         error={registerMutation.isError && !confirmPassword}
+                        selectionColor={theme.colors.empbizPrimary}
+                        activeOutlineColor={theme.colors.empbizPrimary}
+                        theme={{
+                            colors: {
+                                outline: theme.colors.empbizIconGray,
+                                onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                            }
+                        }}
                     />
-
                     <Button
                         mode="contained"
                         onPress={handleRegister}
@@ -196,7 +233,10 @@ const RegisterScreen = () => {
 
                     <Button
                         mode="text"
-                        onPress={() => router.push('/login')}
+                        onPress={() => {
+                            const loginRoute = fallback ? `/intro?fallback=${encodeURIComponent(fallback)}` : '/intro';
+                            router.push(loginRoute);
+                        }}
                         style={styles.loginButton}
                         labelStyle={styles.loginLabel}>
                         Already have an account? Sign In

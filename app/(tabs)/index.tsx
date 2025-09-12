@@ -66,13 +66,13 @@ export default function HomeScreen() {
             alignItems: 'center',
         },
         searchBar: {
-            backgroundColor: theme.colors.empbizDarkerBackground,
+            backgroundColor: theme.colors.surface,
             elevation: 0,
             borderRadius: 5,
         },
         searchInput: {
             fontSize: 16,
-            color: theme.colors.empbizTextDarkerGray,
+            color: theme.colors.empbizBlack,
             fontFamily: 'Inter',
         },
         advertBanner: {
@@ -158,7 +158,7 @@ export default function HomeScreen() {
             marginRight: 16,
         },
         productCard: {
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
             borderRadius: PRODUCT_CARD_BORDER_RADIUS,
             overflow: 'hidden',
             padding: PRODUCT_CARD_PADDING,
@@ -183,7 +183,7 @@ export default function HomeScreen() {
             width: 32,
             height: 32,
             borderRadius: 16,
-            backgroundColor: theme.colors.empbizIconGray,
+            backgroundColor: withOpacity(theme.colors.empbizBlack, 0.6),
             justifyContent: 'center',
             alignItems: 'center',
         },

@@ -1,18 +1,32 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Avatar, Button, Text, TouchableRipple } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCurrentUser, useLogout } from '../hooks/useAuth';
+import { useAuthGuard } from '../hooks/useAuthGuard';
 import { useBizTheme } from '../hooks/useBizTheme';
 import { withOpacity } from '../theme/theme';
 
 export default function ProfileScreen() {
     const router = useRouter();
     const theme = useBizTheme();
+    const { isAuthenticated, requireAuth } = useAuthGuard();
     const { data: user } = useCurrentUser();
     const logoutMutation = useLogout();
+
+    // Check authentication when component mounts
+    useEffect(() => {
+        if (!requireAuth('/(tabs)/profile')) {
+            return;
+        }
+    }, [isAuthenticated]);
+
+    // Don't render anything if not authenticated - the auth guard will redirect
+    if (!isAuthenticated) {
+        return null;
+    }
 
     const handleLogout = async () => {
         try {
@@ -61,7 +75,7 @@ export default function ProfileScreen() {
             flexDirection: 'row',
             alignItems: 'center',
             padding: 16,
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
             borderRadius: 12,
             marginBottom: 12,
             borderWidth: 1,

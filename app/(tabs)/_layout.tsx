@@ -41,7 +41,7 @@ export default function TabLayout() {
             screenOptions={{
                 headerShown: false,
                 tabBarActiveTintColor: theme.colors.empbizPrimary,
-                tabBarInactiveTintColor: theme.colors.empbizBlack,
+                tabBarInactiveTintColor: theme.colors.empbizTextDarkerGray,
                 tabBarStyle: {
                     backgroundColor: theme.colors.surface,
                     borderTopWidth: 1,

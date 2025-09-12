@@ -190,7 +190,7 @@ export default function OrdersScreen() {
             fontWeight: '600',
         },
         orderCard: {
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
             borderRadius: 12,
             marginBottom: 16,
             overflow: 'hidden',

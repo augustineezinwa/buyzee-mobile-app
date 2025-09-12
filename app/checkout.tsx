@@ -51,7 +51,7 @@ export default function CheckoutScreen() {
         },
         card: {
             marginBottom: 16,
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
             borderRadius: 12,
         },
         orderItem: {
@@ -275,6 +275,14 @@ export default function CheckoutScreen() {
                             mode="outlined"
                             style={styles.input}
                             keyboardType="email-address"
+                            selectionColor={theme.colors.empbizPrimary}
+                            activeOutlineColor={theme.colors.empbizPrimary}
+                            theme={{
+                                colors: {
+                                    outline: theme.colors.empbizIconGray,
+                                    onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                                }
+                            }}
                         />
                     </Card.Content>
                 </Card>
@@ -288,6 +296,14 @@ export default function CheckoutScreen() {
                             onChangeText={(text) => handleAddressChange('street', text)}
                             mode="outlined"
                             style={styles.input}
+                            selectionColor={theme.colors.empbizPrimary}
+                            activeOutlineColor={theme.colors.empbizPrimary}
+                            theme={{
+                                colors: {
+                                    outline: theme.colors.empbizIconGray,
+                                    onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                                }
+                            }}
                         />
                         <TextInput
                             label="City"
@@ -295,6 +311,14 @@ export default function CheckoutScreen() {
                             onChangeText={(text) => handleAddressChange('city', text)}
                             mode="outlined"
                             style={styles.input}
+                            selectionColor={theme.colors.empbizPrimary}
+                            activeOutlineColor={theme.colors.empbizPrimary}
+                            theme={{
+                                colors: {
+                                    outline: theme.colors.empbizIconGray,
+                                    onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                                }
+                            }}
                         />
                         <View style={styles.row}>
                             <TextInput
@@ -303,6 +327,14 @@ export default function CheckoutScreen() {
                                 onChangeText={(text) => handleAddressChange('state', text)}
                                 mode="outlined"
                                 style={[styles.input, styles.halfInput]}
+                                selectionColor={theme.colors.empbizPrimary}
+                                activeOutlineColor={theme.colors.empbizPrimary}
+                                theme={{
+                                    colors: {
+                                        outline: theme.colors.empbizIconGray,
+                                        onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                                    }
+                                }}
                             />
                             <TextInput
                                 label="ZIP Code"
@@ -311,6 +343,14 @@ export default function CheckoutScreen() {
                                 mode="outlined"
                                 style={[styles.input, styles.halfInput]}
                                 keyboardType="numeric"
+                                selectionColor={theme.colors.empbizPrimary}
+                                activeOutlineColor={theme.colors.empbizPrimary}
+                                theme={{
+                                    colors: {
+                                        outline: theme.colors.empbizIconGray,
+                                        onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                                    }
+                                }}
                             />
                         </View>
                     </Card.Content>

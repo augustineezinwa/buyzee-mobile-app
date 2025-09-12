@@ -131,7 +131,7 @@ export default function OrderDetailsScreen() {
             paddingHorizontal: 24,
         },
         orderCard: {
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
             borderRadius: 12,
             marginBottom: 16,
             overflow: 'hidden',
@@ -205,7 +205,7 @@ export default function OrderDetailsScreen() {
             fontSize: 18,
         },
         timelineCard: {
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
             borderRadius: 12,
             marginBottom: 16,
             overflow: 'hidden',
@@ -274,7 +274,7 @@ export default function OrderDetailsScreen() {
             fontSize: 12,
         },
         etaCard: {
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
             borderRadius: 12,
             marginBottom: 24,
             overflow: 'hidden',

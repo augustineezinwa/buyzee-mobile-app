@@ -1,10 +1,11 @@
 // Instructions: Create modern App.tsx with Expo and StatusBar (Original comment, retained)
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack as StackRouter } from 'expo-router/stack';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, useColorScheme, View } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper'; // Removed DefaultTheme, ThemeProvider imports from here
 import { useCurrentUser } from './hooks/useAuth'; // Assuming useCurrentUser is in this path
@@ -30,8 +31,24 @@ const styles = StyleSheet.create({
 
 function RootNavigatorContent() {
   const { data: user, isLoading: isUserLoading } = useCurrentUser();
+  const [hasSkippedAuth, setHasSkippedAuth] = useState<boolean | null>(null);
 
-  if (isUserLoading) {
+  useEffect(() => {
+    const checkSkipPreference = async () => {
+      try {
+        const skipValue = await AsyncStorage.getItem('userSkippedAuth');
+        setHasSkippedAuth(skipValue === 'true');
+      } catch (error) {
+        console.error('Error checking skip preference:', error);
+        setHasSkippedAuth(false);
+      }
+    };
+
+    checkSkipPreference();
+  }, []);
+
+  // Show loading while checking user auth and skip preference
+  if (isUserLoading || hasSkippedAuth === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
@@ -39,9 +56,12 @@ function RootNavigatorContent() {
     );
   }
 
+  // If user is authenticated OR has skipped auth, show the main app
+  const shouldShowMainApp = user || hasSkippedAuth;
+
   return (
     <StackRouter screenOptions={{ headerShown: false }}>
-      {user ? (
+      {shouldShowMainApp ? (
         <StackRouter.Screen name="(tabs)" />
       ) : (
         <StackRouter.Screen name="(auth)" />

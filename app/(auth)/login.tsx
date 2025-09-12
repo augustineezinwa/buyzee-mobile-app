@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import {
@@ -17,6 +17,7 @@ const LoginScreen = () => {
     const router = useRouter();
     const loginMutation = useLogin();
     const theme = useBizTheme();
+    const { fallback } = useLocalSearchParams<{ fallback?: string }>();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -31,7 +32,12 @@ const LoginScreen = () => {
 
         try {
             await loginMutation.mutateAsync({ email, password });
-            router.replace('/(tabs)');
+            // Redirect to fallback route if provided, otherwise go to tabs
+            if (fallback) {
+                router.replace(decodeURIComponent(fallback));
+            } else {
+                router.replace('/(tabs)');
+            }
         } catch (error) {
             setSnackbarVisible(true);
             console.error(error);
@@ -70,7 +76,7 @@ const LoginScreen = () => {
         },
         input: {
             marginBottom: 20,
-            backgroundColor: 'white',
+            backgroundColor: theme.colors.surface,
         },
         inputOutline: {
             borderColor: theme.colors.empbizIconGray,
@@ -150,6 +156,14 @@ const LoginScreen = () => {
                         outlineStyle={styles.inputOutline}
                         contentStyle={styles.inputContent}
                         error={loginMutation.isError && !email}
+                        selectionColor={theme.colors.empbizPrimary}
+                        activeOutlineColor={theme.colors.empbizPrimary}
+                        theme={{
+                            colors: {
+                                outline: theme.colors.empbizIconGray,
+                                onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                            }
+                        }}
                     />
 
                     <TextInput
@@ -168,6 +182,14 @@ const LoginScreen = () => {
                         outlineStyle={styles.inputOutline}
                         contentStyle={styles.inputContent}
                         error={loginMutation.isError && !password}
+                        selectionColor={theme.colors.empbizPrimary}
+                        activeOutlineColor={theme.colors.empbizPrimary}
+                        theme={{
+                            colors: {
+                                outline: theme.colors.empbizIconGray,
+                                onSurfaceVariant: theme.colors.empbizTextDarkerGray,
+                            }
+                        }}
                     />
 
                     <Button
@@ -182,7 +204,10 @@ const LoginScreen = () => {
 
                     <Button
                         mode="text"
-                        onPress={() => router.push('/register')}
+                        onPress={() => {
+                            const signupRoute = fallback ? `/signup-intro?fallback=${encodeURIComponent(fallback)}` : '/signup-intro';
+                            router.push(signupRoute);
+                        }}
                         style={styles.registerButton}
                         labelStyle={styles.registerLabel}>
                         Don&apos;t have an account? Sign Up

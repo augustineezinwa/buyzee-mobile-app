@@ -57,7 +57,7 @@ export const darkTheme: CustomTheme = {
         empbizBackground: '#121517',
         empbizBlack: '#FFFFFF',
         empbizGray777: '#999999',
-        empbizDarkerBackground: '#1A1BF',
+        empbizDarkerBackground: '#1A1B1F',
         empbizIconGray: '#6B7073',
         empbizTextGray: '#71747E',
         empbizTextDarkerGray: '#A5A8AA',

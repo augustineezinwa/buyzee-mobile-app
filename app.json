@@ -4,7 +4,7 @@
     "slug": "empowerme-biz",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/empower-biz.png",
     "scheme": "empowermebiz",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/empower-biz.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
@@ -21,22 +21,34 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/empower-biz.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "image": "./assets/images/empower-biz.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "image": "./assets/images/empower-biz.png",
+            "resizeMode": "cover",
+            "backgroundColor": "#121517"
+          }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "642785d6-1212-4a75-9c13-b46c468a9569"
+      }
+    },
+    "owner": "augustineezinwa"
   }
 }
